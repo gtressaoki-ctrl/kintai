@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: ['icon.svg'],
       manifest: {
         name: '勤怠管理',
         short_name: '勤怠',
@@ -20,8 +20,7 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/kintai/',
         icons: [
-          { src: '/kintai/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/kintai/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/kintai/icon.svg', sizes: 'any', type: 'image/svg+xml' },
         ],
       },
       workbox: {
