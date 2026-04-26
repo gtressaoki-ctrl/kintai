@@ -9,6 +9,7 @@ export type DailyRecord = {
   breakMinutes: number;  // 固定: 60
   memo: string;
   isHoliday: boolean;    // 有給フラグ
+  clockedOut?: boolean;  // 退勤ボタン押下済み
 };
 
 export type Settings = {
