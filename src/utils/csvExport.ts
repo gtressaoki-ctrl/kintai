@@ -21,8 +21,8 @@ export function exportMonthCSV(year: number, month: number, records: KintaiRecor
       continue;
     }
 
-    const workMins = rec.isWorked ? calcWorkMinutes(rec.startTime, rec.endTime, rec.breakMinutes) : 0;
-    const overtimeMins = rec.isWorked ? calcOvertimeMinutes(rec.endTime) : 0;
+    const workMins = rec.isWorked ? calcWorkMinutes(rec.startTime, rec.endTime, rec.breakMinutes, rec.nextDay) : 0;
+    const overtimeMins = rec.isWorked ? calcOvertimeMinutes(rec.endTime, rec.nextDay) : 0;
 
     rows.push([
       dateStr,
@@ -30,7 +30,7 @@ export function exportMonthCSV(year: number, month: number, records: KintaiRecor
       holidayName,
       rec.workType ?? '',
       rec.isWorked ? rec.startTime : '',
-      rec.isWorked ? rec.endTime : '',
+      rec.isWorked ? (rec.nextDay ? `翌${rec.endTime}` : rec.endTime) : '',
       rec.isWorked ? minutesToHHMM(workMins) : '',
       rec.isWorked && overtimeMins > 0 ? minutesToHHMM(overtimeMins) : '',
       rec.isHoliday ? '有給' : '',

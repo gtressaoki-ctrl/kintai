@@ -10,6 +10,7 @@ export type DailyRecord = {
   memo: string;
   isHoliday: boolean;    // 有給フラグ
   clockedOut?: boolean;  // 退勤ボタン押下済み
+  nextDay?: boolean;     // 退勤時刻が翌日にまたがる場合
 };
 
 export type Settings = {
