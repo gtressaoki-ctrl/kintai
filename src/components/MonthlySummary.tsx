@@ -27,8 +27,8 @@ export default function MonthlySummary({ year, month, records }: Props) {
     if (rec.isHoliday) paidLeaveDays++;
     if (rec.isWorked) {
       workedDays++;
-      totalWorkMins += calcWorkMinutes(rec.startTime, rec.endTime, rec.breakMinutes);
-      totalOvertimeMins += calcOvertimeMinutes(rec.endTime);
+      totalWorkMins += calcWorkMinutes(rec.startTime, rec.endTime, rec.breakMinutes, rec.nextDay);
+      totalOvertimeMins += calcOvertimeMinutes(rec.endTime, rec.nextDay);
     }
   }
 

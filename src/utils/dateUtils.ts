@@ -21,16 +21,18 @@ export function parseDate(dateStr: string): Date {
   return new Date(y, m - 1, d);
 }
 
-export function calcWorkMinutes(startTime: string, endTime: string, breakMinutes: number): number {
+export function calcWorkMinutes(startTime: string, endTime: string, breakMinutes: number, nextDay = false): number {
   const [sh, sm] = startTime.split(':').map(Number);
   const [eh, em] = endTime.split(':').map(Number);
-  const total = (eh * 60 + em) - (sh * 60 + sm) - breakMinutes;
+  const endMins = eh * 60 + em + (nextDay ? 24 * 60 : 0);
+  const total = endMins - (sh * 60 + sm) - breakMinutes;
   return Math.max(0, total);
 }
 
-export function calcOvertimeMinutes(endTime: string): number {
+export function calcOvertimeMinutes(endTime: string, nextDay = false): number {
   const [eh, em] = endTime.split(':').map(Number);
-  const overtime = (eh * 60 + em) - (17 * 60 + 30);
+  const endMins = eh * 60 + em + (nextDay ? 24 * 60 : 0);
+  const overtime = endMins - (17 * 60 + 30);
   return Math.max(0, overtime);
 }
 

@@ -32,8 +32,8 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
   const dow = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
   const holidayName = getHolidayName(date);
 
-  const workMins = form.isWorked ? calcWorkMinutes(form.startTime, form.endTime, form.breakMinutes) : 0;
-  const overtimeMins = form.isWorked ? calcOvertimeMinutes(form.endTime) : 0;
+  const workMins = form.isWorked ? calcWorkMinutes(form.startTime, form.endTime, form.breakMinutes, form.nextDay) : 0;
+  const overtimeMins = form.isWorked ? calcOvertimeMinutes(form.endTime, form.nextDay) : 0;
 
   useEffect(() => {
     setForm(record ?? emptyRecord(dateStr));
@@ -150,12 +150,24 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">退勤時刻</label>
-                  <input
-                    type="time"
-                    value={form.endTime}
-                    onChange={e => set('endTime', e.target.value)}
-                    className="w-full text-base border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 min-h-[44px]"
-                  />
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="time"
+                      value={form.endTime}
+                      onChange={e => set('endTime', e.target.value)}
+                      className="flex-1 text-base border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 min-h-[44px]"
+                    />
+                    <button
+                      onClick={() => set('nextDay', !form.nextDay)}
+                      className={`px-3 min-h-[44px] rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${
+                        form.nextDay
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                      }`}
+                    >
+                      翌日
+                    </button>
+                  </div>
                 </div>
               </div>
 
