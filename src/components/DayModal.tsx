@@ -47,6 +47,24 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
     });
   }
 
+  function toggleWorked() {
+    setForm(prev => {
+      const isWorked = !prev.isWorked;
+      const next = { ...prev, isWorked, isDayOff: isWorked ? false : prev.isDayOff };
+      saveRecord(next);
+      return next;
+    });
+  }
+
+  function toggleDayOff() {
+    setForm(prev => {
+      const isDayOff = !prev.isDayOff;
+      const next = { ...prev, isDayOff, isWorked: isDayOff ? false : prev.isWorked };
+      saveRecord(next);
+      return next;
+    });
+  }
+
   // Close on backdrop click
   function handleBackdrop(e: React.MouseEvent) {
     if (e.target === e.currentTarget) {
@@ -89,7 +107,7 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
           <div className="flex items-center justify-between">
             <label className="text-base font-medium">出勤</label>
             <button
-              onClick={() => set('isWorked', !form.isWorked)}
+              onClick={toggleWorked}
               className={`min-w-[56px] min-h-[44px] flex items-center justify-center rounded-xl text-xl font-bold transition-colors ${
                 form.isWorked
                   ? 'bg-green-600 text-white'
@@ -97,6 +115,21 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
               }`}
             >
               {form.isWorked ? '✓' : '—'}
+            </button>
+          </div>
+
+          {/* 休日チェック */}
+          <div className="flex items-center justify-between">
+            <label className="text-base font-medium">休日<span className="text-xs text-gray-400 dark:text-gray-500 ml-1">（会社休日・振替など）</span></label>
+            <button
+              onClick={toggleDayOff}
+              className={`min-w-[56px] min-h-[44px] flex items-center justify-center rounded-xl text-sm font-bold transition-colors ${
+                form.isDayOff
+                  ? 'bg-cyan-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+              }`}
+            >
+              {form.isDayOff ? '休日' : '—'}
             </button>
           </div>
 
