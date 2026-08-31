@@ -11,6 +11,7 @@ export type DailyRecord = {
   isHoliday: boolean;    // 有給フラグ
   clockedOut?: boolean;  // 退勤ボタン押下済み
   nextDay?: boolean;     // 退勤時刻が翌日にまたがる場合
+  isDayOff?: boolean;    // 会社休日・振替休日などの休み
 };
 
 export type Settings = {

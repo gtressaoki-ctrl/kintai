@@ -59,6 +59,7 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
           const record = records[dateStr];
           const isWorked = record?.isWorked ?? false;
           const isPaidLeave = record?.isHoliday ?? false;
+          const isDayOff = record?.isDayOff ?? false;
 
           const dateNumColor =
             isSun || isHoliday
@@ -69,6 +70,8 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
 
           const cellBg = isWorked
             ? 'bg-green-50 dark:bg-green-950'
+            : isDayOff
+            ? 'bg-cyan-50 dark:bg-cyan-950'
             : isPaidLeave
             ? 'bg-yellow-50 dark:bg-yellow-950'
             : 'bg-white dark:bg-gray-800';
@@ -92,6 +95,12 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
               {isWorked && (
                 <span className="block text-green-700 dark:text-green-400 text-[10px] leading-tight mt-0.5">
                   {record?.workType ?? '出勤'}
+                </span>
+              )}
+
+              {isDayOff && !isWorked && (
+                <span className="block text-cyan-600 dark:text-cyan-400 text-[10px] leading-tight mt-0.5">
+                  休日
                 </span>
               )}
 
