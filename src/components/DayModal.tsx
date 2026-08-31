@@ -35,6 +35,9 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
   const workMins = form.isWorked ? calcWorkMinutes(form.startTime, form.endTime, form.breakMinutes, form.nextDay) : 0;
   const overtimeMins = form.isWorked ? calcOvertimeMinutes(form.endTime, form.nextDay) : 0;
 
+  const isScheduledOff = date.getDay() === 0 || date.getDay() === 6 || !!holidayName || !!form.isDayOff;
+  const isHolidayWork = isScheduledOff && form.isWorked;
+
   useEffect(() => {
     setForm(record ?? emptyRecord(dateStr));
   }, [dateStr, record]);
@@ -117,6 +120,13 @@ export default function DayModal({ dateStr, record, onClose, onSave }: Props) {
               {form.isWorked ? '✓' : '—'}
             </button>
           </div>
+
+          {/* 休日出勤バナー */}
+          {isHolidayWork && (
+            <div className="bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 rounded-lg px-3 py-2 text-sm font-semibold text-center">
+              休日出勤として記録されます
+            </div>
+          )}
 
           {/* 休日チェック */}
           <div className="flex items-center justify-between">

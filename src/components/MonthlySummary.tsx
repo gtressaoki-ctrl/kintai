@@ -19,29 +19,30 @@ export default function MonthlySummary({ year, month, records }: Props) {
   let totalWorkMins = 0;
   let totalOvertimeMins = 0;
   let paidLeaveDays = 0;
+  let holidayWorkDays = 0;
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const date = new Date(year, month - 1, d);
+    const dow = date.getDay();
     const rec = records[dateStr];
-    if (!rec) continue;
-    if (rec.isHoliday) paidLeaveDays++;
-    if (rec.isWorked) {
+
+    if (rec?.isHoliday) paidLeaveDays++;
+
+    if (rec?.isWorked) {
       workedDays++;
       totalWorkMins += calcWorkMinutes(rec.startTime, rec.endTime, rec.breakMinutes, rec.nextDay);
       totalOvertimeMins += calcOvertimeMinutes(rec.endTime, rec.nextDay);
+
+      const isScheduledOff = dow === 0 || dow === 6 || !!getHolidayName(date) || !!rec.isDayOff;
+      if (isScheduledOff) holidayWorkDays++;
     }
   }
 
-  // Count holidays in month (for reference)
-  let holidayCount = 0;
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month - 1, d);
-    if (getHolidayName(date) || date.getDay() === 0 || date.getDay() === 6) holidayCount++;
-  }
   const overOvertimeWarning = totalOvertimeMins >= 45 * 60;
 
   return (
-    <div className="mb-4 bg-white dark:bg-gray-800 rounded-xl shadow px-4 py-3">
+    <div className="mb-4 bg-white dark:bg-gray-800 rounded-xl shadow px-4 py-3 space-y-2">
       <div className="grid grid-cols-4 gap-2 text-center">
         <div>
           <div className="text-xs text-gray-500 dark:text-gray-400">出勤日数</div>
@@ -62,8 +63,16 @@ export default function MonthlySummary({ year, month, records }: Props) {
           <div className="text-lg font-bold">{paidLeaveDays}<span className="text-xs ml-0.5">日</span></div>
         </div>
       </div>
+
+      {holidayWorkDays > 0 && (
+        <div className="flex items-center justify-between bg-orange-50 dark:bg-orange-950 rounded-lg px-3 py-1.5">
+          <span className="text-sm text-orange-700 dark:text-orange-400 font-medium">休日出勤</span>
+          <span className="text-sm font-bold text-orange-700 dark:text-orange-400">{holidayWorkDays}日</span>
+        </div>
+      )}
+
       {overOvertimeWarning && (
-        <div className="mt-2 text-xs text-orange-500 font-medium text-center">
+        <div className="text-xs text-orange-500 font-medium text-center">
           ⚠️ 残業時間が45時間を超えています
         </div>
       )}

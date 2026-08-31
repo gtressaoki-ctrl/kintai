@@ -14,20 +14,17 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
   const today = formatDate(new Date());
   const firstDay = new Date(year, month - 1, 1);
   const lastDay = new Date(year, month, 0);
-  const startDow = firstDay.getDay(); // 0=Sun
+  const startDow = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
 
-  // Build grid cells: empty padding + days
   const cells: (number | null)[] = [
     ...Array(startDow).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-  // Pad end to complete last row
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
     <div className="w-full">
-      {/* Day-of-week headers */}
       <div className="grid grid-cols-7 mb-1">
         {DOW.map((d, i) => (
           <div
@@ -41,7 +38,6 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
         ))}
       </div>
 
-      {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
         {cells.map((day, idx) => {
           if (day === null) {
@@ -54,26 +50,36 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
           const isSat = dow === 6;
           const isSun = dow === 0;
           const holidayName = getHolidayName(date);
-          const isHoliday = holidayName !== null;
+          const isNationalHoliday = holidayName !== null;
           const isToday = dateStr === today;
           const record = records[dateStr];
           const isWorked = record?.isWorked ?? false;
           const isPaidLeave = record?.isHoliday ?? false;
           const isDayOff = record?.isDayOff ?? false;
 
+          // 予定休日 = 土・日・祝・会社休日
+          const isScheduledOff = isSun || isNationalHoliday || isSat || isDayOff;
+          const isHolidayWork = isScheduledOff && isWorked;
+
           const dateNumColor =
-            isSun || isHoliday
+            isSun || isNationalHoliday
               ? 'text-red-600 dark:text-red-400'
               : isSat
               ? 'text-blue-600 dark:text-blue-400'
               : 'text-gray-900 dark:text-gray-100';
 
-          const cellBg = isWorked
+          const cellBg = isHolidayWork
+            ? 'bg-orange-100 dark:bg-orange-950'
+            : isWorked
             ? 'bg-green-50 dark:bg-green-950'
             : isDayOff
             ? 'bg-cyan-50 dark:bg-cyan-950'
             : isPaidLeave
             ? 'bg-yellow-50 dark:bg-yellow-950'
+            : isSun || isNationalHoliday
+            ? 'bg-red-50 dark:bg-red-950'
+            : isSat
+            ? 'bg-blue-50 dark:bg-blue-950'
             : 'bg-white dark:bg-gray-800';
 
           const todayBorder = isToday ? 'ring-2 ring-blue-700 ring-inset z-10' : '';
@@ -82,17 +88,23 @@ export default function Calendar({ year, month, records, onDayClick }: Props) {
             <button
               key={dateStr}
               onClick={() => onDayClick(dateStr)}
-              className={`relative ${cellBg} ${todayBorder} min-h-[60px] p-1 text-left hover:bg-opacity-80 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`relative ${cellBg} ${todayBorder} min-h-[60px] p-1 text-left hover:brightness-95 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500`}
             >
               <span className={`text-base font-medium leading-none ${dateNumColor}`}>{day}</span>
 
-              {holidayName && (
+              {isNationalHoliday && (
                 <span className="block text-red-500 dark:text-red-400 text-[10px] leading-tight mt-0.5 truncate">
                   {holidayName}
                 </span>
               )}
 
-              {isWorked && (
+              {isHolidayWork && (
+                <span className="block text-orange-600 dark:text-orange-400 text-[10px] leading-tight mt-0.5 font-semibold">
+                  休日出勤
+                </span>
+              )}
+
+              {isWorked && !isHolidayWork && (
                 <span className="block text-green-700 dark:text-green-400 text-[10px] leading-tight mt-0.5">
                   {record?.workType ?? '出勤'}
                 </span>
